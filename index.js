@@ -6,6 +6,8 @@ const path = require("path");
 const expressLayouts = require("express-ejs-layouts");
 const session = require("express-session");
 const flash = require("connect-flash");
+const frontend = require('./routes/frontend')
+const admin = require('./routes/admin')
 dotenv.config();
 
 //Middlewares
@@ -27,11 +29,18 @@ mongoose.connect(process.env.LOCAL_MONGO_URI);
 
 const port = process.env.PORT || 3000;
 
+// Routes Handle
+// frontend
+app.use('/' ,frontend);
 
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
+// admin
+// Layout of admin is not same as frontend
+app.use('/admin' ,(req , res , next) => {
+  res.locals.layout = 'admin/layout'; 
+  next();
 });
+app.use('/admin' , admin);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
