@@ -23,7 +23,7 @@ router.get('/add-user',addUserPage);
 router.post('/add-user',addUser);
 router.get('/update-user/:id',updateUserPage);
 router.post('/update-user/:id',updateUser);
-router.get('/delete-user/:id',deleteUser);
+router.delete('/delete-user/:id',deleteUser);
 
 
 // Category CRUD routes
@@ -32,7 +32,7 @@ router.get('/add-category',addCategoryPage);
 router.post('/add-category',addCategory);
 router.get('/update-category/:id',updateCategoryPage);
 router.post('/update-category/:id',updateCategory);
-router.get('/delete-category/:id',deleteCategory);
+router.delete('/delete-category/:id',deleteCategory);
 
 // Article CRUD routes
 router.get('/article',allArticle);
@@ -40,7 +40,7 @@ router.get('/add-article',addArticlePage);
 router.post('/add-article',addArticle);
 router.get('/update-article/:id',updateArticlePage);
 router.post('/update-article/:id',updateArticle);
-router.get('/delete-article/:id',deleteArticle);
+router.delete('/delete-article/:id',deleteArticle);
 
 // Comment CRUD routes
 router.get('/comments',allComments);
