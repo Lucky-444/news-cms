@@ -1,4 +1,9 @@
 const userModel = require("../models/User");
+const bcrypt = require("bcryptjs");
+const dotenv = require("dotenv");
+const jwt = require("jsonwebtoken");
+
+dotenv.config();
 
 // Login Routes Handler
 const loginPage = (req, res) => {
@@ -7,26 +12,57 @@ const loginPage = (req, res) => {
   });
 };
 
-const adminLogin = (req, res) => {};
+const adminLogin = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await userModel.findOne({ username });
+    if (!user) {
+      return res.status(401).send("invalid Username");
+    }
 
-const logout = (req, res) => {};
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).send("passWord  iS In correct");
+    }
+
+    const jwtData = { id: user._id, fullname: user.fullname, role: user.role };
+    const token = jwt.sign(jwtData, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.cookie("token", token, {
+      maxAge: 1000 * 60 * 60 * 24,
+      httpOnly: true,
+    });
+
+    res.redirect("/admin/dashboard");
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("inTernal server error");
+  }
+};
+
+const logout = (req, res) => {
+  res.clearCookie("token");
+  res.redirect("/admin/");
+};
 
 const dashboard = async (req, res) => {
-  res.render("admin/dashboard");
+  res.render("admin/dashboard", { role: req.role , fullname : req.fullname});
 };
 
 const settings = async (req, res) => {
-  res.render("admin/settings");
+  res.render("admin/settings", { role: req.role });
 };
 
 // User CRUD Routes Handler
 const allUser = async (req, res) => {
   const users = await userModel.find();
-  res.render("admin/users/index", { users });
+  res.render("admin/users/index", { users, role: req.role });
 };
 
 const addUserPage = (req, res) => {
-  res.render("admin/users/create");
+  res.render("admin/users/create", { role: req.role });
 };
 
 const addUser = async (req, res) => {
@@ -43,7 +79,7 @@ const updateUserPage = async (req, res) => {
     if (!user) {
       return res.status(404).send("User not found");
     }
-    res.render("admin/users/update", { user });
+    res.render("admin/users/update", { user, role: req.role });
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");

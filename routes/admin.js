@@ -1,49 +1,77 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const router = express.Router();
 
-const { loginPage , adminLogin , logout ,dashboard ,settings } = require('../controllers/userController');
-const { allUser , addUserPage , addUser , updateUserPage , updateUser , deleteUser } = require('../controllers/userController');
-const { allCategory , addCategoryPage , addCategory , updateCategoryPage , updateCategory , deleteCategory } = require('../controllers/categoryController');
-const { allArticle , addArticlePage , addArticle , updateArticlePage , updateArticle , deleteArticle } = require('../controllers/articleController');
-const { allComments } = require('../controllers/commentController');    
-
-
+const {
+  loginPage,
+  adminLogin,
+  logout,
+  dashboard,
+  settings,
+} = require("../controllers/userController");
+const {
+  allUser,
+  addUserPage,
+  addUser,
+  updateUserPage,
+  updateUser,
+  deleteUser,
+} = require("../controllers/userController");
+const {
+  allCategory,
+  addCategoryPage,
+  addCategory,
+  updateCategoryPage,
+  updateCategory,
+  deleteCategory,
+} = require("../controllers/categoryController");
+const {
+  allArticle,
+  addArticlePage,
+  addArticle,
+  updateArticlePage,
+  updateArticle,
+  deleteArticle,
+} = require("../controllers/articleController");
+const { allComments } = require("../controllers/commentController");
+const isLoggedIn = require("../middleware/isloggedin");
+const isAdmin = require("../middleware/isAdmin");
 
 //Login routes
-router.get('/',loginPage);
-router.post('/index',adminLogin);
-router.get('/logout',logout);
-router.get('/dashboard' ,dashboard);
-router.get('/settings' ,settings);
+router.get("/", loginPage);
+router.post("/index", adminLogin);
+
+router.get("/logout", isLoggedIn, logout);
+
+router.get("/dashboard", isLoggedIn, dashboard);
+router.get("/settings", isLoggedIn, isAdmin, settings);
 
 // User CRUD routes
-router.get('/users',allUser);
-router.get('/add-user',addUserPage);
-router.post('/add-user',addUser);
-router.get('/update-user/:id',updateUserPage);
-router.post('/update-user/:id',updateUser);
-router.delete('/delete-user/:id',deleteUser);
-
+router.get("/users", isLoggedIn, allUser);
+router.get("/add-user", isLoggedIn, isAdmin, addUserPage);
+router.post("/add-user", isLoggedIn, isAdmin, addUser);
+router.get("/update-user/:id", isLoggedIn, isAdmin, updateUserPage);
+router.post("/update-user/:id", isLoggedIn, isAdmin, updateUser);
+router.delete("/delete-user/:id", isLoggedIn, isAdmin, deleteUser);
 
 // Category CRUD routes
-router.get('/category',allCategory);
-router.get('/add-category',addCategoryPage);
-router.post('/add-category',addCategory);
-router.get('/update-category/:id',updateCategoryPage);
-router.post('/update-category/:id',updateCategory);
-router.delete('/delete-category/:id',deleteCategory);
+router.get("/category", isLoggedIn, isAdmin, allCategory);
+router.get("/add-category", isLoggedIn, isAdmin, addCategoryPage);
+router.post("/add-category", isLoggedIn, isAdmin, addCategory);
+router.get("/update-category/:id", isLoggedIn, isAdmin, updateCategoryPage);
+router.post("/update-category/:id", isLoggedIn, isAdmin, updateCategory);
+router.delete("/delete-category/:id", isLoggedIn, isAdmin, deleteCategory);
 
 // Article CRUD routes
-router.get('/article',allArticle);
-router.get('/add-article',addArticlePage);
-router.post('/add-article',addArticle);
-router.get('/update-article/:id',updateArticlePage);
-router.post('/update-article/:id',updateArticle);
-router.delete('/delete-article/:id',deleteArticle);
+router.get("/article", isLoggedIn, allArticle);
+router.get("/add-article", isLoggedIn, addArticlePage);
+router.post("/add-article", isLoggedIn, addArticle);
+router.get("/update-article/:id", isLoggedIn, updateArticlePage);
+router.post("/update-article/:id", isLoggedIn, updateArticle);
+router.delete("/delete-article/:id", isLoggedIn, deleteArticle);
 
 // Comment CRUD routes
-router.get('/comments',allComments);
-// router.get('/delete-comment/:id',deleteComment); // commented out for now
+router.get("/comments", isLoggedIn, allComments);
+// router.get('/delete-comment/:id',isLoggedIn,isAdmin,deleteComment); // commented out for now
 
 module.exports = router;

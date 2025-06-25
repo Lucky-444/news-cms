@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -10,12 +10,11 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
     <!-- Font Awesome Icon -->
     <link rel="stylesheet" href="/css/font-awesome.css">
-    <!-- Custom stlylesheet -->
+    <!-- Custom stylesheet -->
     <link rel="stylesheet" href="/css/style.css">
-
     <%- typeof tabulatorCSS == 'undefined' ? '' : tabulatorCSS %> 
-  </head>
-  <body>
+</head>
+<body>
     <!-- HEADER -->
     <div id="header-admin">
       <!-- container -->
@@ -50,22 +49,18 @@
               <li>
                 <a href="/admin/article">Article</a>
               </li>
-            <% if(role === 'admin') { %>
               <li>
                 <a href="/admin/category">Category</a>
               </li>
               <li>
                 <a href="/admin/users">Users</a>
               </li>
-            <% } %>  
               <li>
                 <a href="/admin/comments">Comments</a>
               </li>
-            <% if(role === 'admin') { %>  
               <li>
                 <a href="/admin/settings">Settings</a>
               </li>
-            <% } %>  
             </ul>
           </div>
         </div>
@@ -73,13 +68,16 @@
     </div>
     <!-- /Menu Bar -->
 
+  <div id="main-content">
   <%- body %> 
+  </div>
+  
 <!-- Footer -->
-<div id ="footer">
+<div id="footer">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <span>© Copyright 2025 News | Powered by <a href="http://yahubaba.com/">Yahu Baba</a></span>
+                <span>© Copyright 2025 News | Powered by <a href="http://Lucky.com/">MARK_XL_II</a></span>
             </div>
         </div>
     </div>
@@ -88,3 +86,4 @@
 
 </body>
 </html>
+
