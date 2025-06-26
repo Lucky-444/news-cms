@@ -9,6 +9,7 @@ const isLoggedIn = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     //     req.user = decoded;
+    req.id = decoded.id;
     req.role = decoded.role;
     req.fullname = decoded.fullname;
     next();

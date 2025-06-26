@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 
+const upload = require("../middleware/multer");
+
 const {
   loginPage,
   adminLogin,
@@ -33,9 +35,6 @@ const {
   updateArticle,
   deleteArticle,
 } = require("../controllers/articleController");
-
-
-
 
 const { allComments } = require("../controllers/commentController");
 const isLoggedIn = require("../middleware/isloggedin");
@@ -69,9 +68,14 @@ router.delete("/delete-category/:id", isLoggedIn, isAdmin, deleteCategory);
 // Article CRUD routes
 router.get("/article", isLoggedIn, allArticle);
 router.get("/add-article", isLoggedIn, addArticlePage);
-router.post("/add-article", isLoggedIn, addArticle);
+router.post("/add-article", isLoggedIn, upload.single("image"), addArticle);
 router.get("/update-article/:id", isLoggedIn, updateArticlePage);
-router.post("/update-article/:id", isLoggedIn, updateArticle);
+router.post(
+  "/update-article/:id",
+  isLoggedIn,
+  upload.single("image"),
+  updateArticle
+);
 router.delete("/delete-article/:id", isLoggedIn, deleteArticle);
 
 // Comment CRUD routes
