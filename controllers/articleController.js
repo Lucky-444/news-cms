@@ -4,10 +4,23 @@ const userModel = require("../models/User");
 
 const allArticle = async (req, res) => {
   try {
-    const articles = await newsModel
-      .find()
-      .populate("category", "name")
-      .populate("author", "fullname");
+    if (!req.id) {
+      return res.status(404).send("Article not found");
+    }
+
+    let articles;
+    if (req.role === "admin") {
+      articles = await newsModel
+        .find()
+        .populate("category", "name")
+        .populate("author", "fullname");
+    } else {
+      articles = await newsModel
+        .find({ author: req.id })
+        .populate("category", "name")
+        .populate("author", "fullname");
+    }
+
     res.render("admin/articles", { role: req.role, articles });
   } catch (error) {
     console.log(error);
@@ -44,53 +57,54 @@ const addArticle = async (req, res) => {
   }
 };
 
-
-
-
-
 const updateArticlePage = async (req, res) => {
   try {
-    const article = await newsModel.findById(req.params.id).populate("category" , "name").populate("author", "fullname");
-    if(!article){
+    const article = await newsModel
+      .findById(req.params.id)
+      .populate("category", "name")
+      .populate("author", "fullname");
+    if (!article) {
       return res.status(404).send("Article not found");
     }
 
     console.log(article);
 
     const categories = await categoryModel.find();
-    
-    
-    res.render("admin/articles/update", { role: req.role , article , categories});
+
+
+
+    res.render("admin/articles/update", {
+      role: req.role,
+      article,
+      categories,
+    });
   } catch (error) {
     console.log(error);
     res.status(500).send("Internal Server Error");
   }
 };
 
-
-
-
-
-
-
-
-
 const updateArticle = async (req, res) => {
   try {
     const article = await newsModel.findById(req.params.id);
-    if(!article){
+    if (!article) {
       return res.status(404).send("Article not found");
     }
 
+    if (req.role === "author") {
+      if (req.id != article.author._id) {
+        return res
+          .status(404)
+          .send("You are not allowed to update this article");
+      }
+    }
 
     article.title = req.body.title || article.title;
     article.content = req.body.content || article.content;
     article.category = req.body.category || article.category;
-    if(req.file)
-    article.image = req.file.filename || article.image;
+    if (req.file) article.image = req.file.filename || article.image;
 
     await article.save();
-
 
     res.redirect("/admin/article");
   } catch (error) {
@@ -102,15 +116,22 @@ const updateArticle = async (req, res) => {
 const deleteArticle = async (req, res) => {
   try {
     const article = await newsModel.findByIdAndDelete(req.params.id);
-    if(!article){
-      res.status(404).send("Article not found" );
+    if (!article) {
+      res.status(404).send("Article not found");
     }
-
-    res.status(201).json({message : "Article deleted successfully" , success : true});
-    
+    if (req.role === "author") {
+      if (req.id != article.author._id) {
+        return res
+          .status(404)
+          .send("You are not allowed to update this article");
+      }
+    }
+    res
+      .status(201)
+      .json({ message: "Article deleted successfully", success: true });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error" , error);
+    res.status(500).send("Internal Server Error", error);
   }
 };
 
