@@ -44,5 +44,5 @@ app.use('/admin' ,(req , res , next) => {
 app.use('/admin' , admin);
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Example app listening on port http://localhost:${port}`);
 });

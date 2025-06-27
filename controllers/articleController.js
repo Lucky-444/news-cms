@@ -1,6 +1,8 @@
 const categoryModel = require("../models/Category");
 const newsModel = require("../models/News");
 const userModel = require("../models/User");
+const fs = require("fs");
+const path = require("path");
 
 const allArticle = async (req, res) => {
   try {
@@ -71,8 +73,6 @@ const updateArticlePage = async (req, res) => {
 
     const categories = await categoryModel.find();
 
-
-
     res.render("admin/articles/update", {
       role: req.role,
       article,
@@ -102,7 +102,19 @@ const updateArticle = async (req, res) => {
     article.title = req.body.title || article.title;
     article.content = req.body.content || article.content;
     article.category = req.body.category || article.category;
-    if (req.file) article.image = req.file.filename || article.image;
+    if (req.file) {
+      const imagePath = path.join(
+        __dirname,
+        "../public/uploads/" + article.image
+      );
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.log(err); 
+        }
+      });//Delete the Old Image and 
+      //after that add the new image in mongoose
+      article.image = req.file.filename;
+    }
 
     await article.save();
 
@@ -115,7 +127,7 @@ const updateArticle = async (req, res) => {
 
 const deleteArticle = async (req, res) => {
   try {
-    const article = await newsModel.findByIdAndDelete(req.params.id);
+    const article = await newsModel.findById(req.params.id);
     if (!article) {
       res.status(404).send("Article not found");
     }
@@ -126,6 +138,20 @@ const deleteArticle = async (req, res) => {
           .send("You are not allowed to update this article");
       }
     }
+
+     const imagePath = path.join(
+        __dirname,
+        "../public/uploads/" + article.image
+      );
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.log(err); 
+        }
+      });//Delete the Old Image and 
+    // await article.remove();
+    // or
+    await article.deleteOne();
+
     res
       .status(201)
       .json({ message: "Article deleted successfully", success: true });

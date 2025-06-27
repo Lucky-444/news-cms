@@ -1,4 +1,7 @@
 const userModel = require("../models/User");
+const categoryModel = require("../models/Category");
+const newsModel = require("../models/News");
+const commentModel = require("../models/Comment");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
@@ -48,7 +51,21 @@ const logout = (req, res) => {
 };
 
 const dashboard = async (req, res) => {
-  res.render("admin/dashboard", { role: req.role , fullname : req.fullname});
+  try {
+    const articleCount = await newsModel.countDocuments();
+    const userCount = await userModel.countDocuments();
+    const categoryCount = await categoryModel.countDocuments();
+
+    res.render("admin/dashboard", {
+      role: req.role,
+      fullname: req.fullname,
+      articleCount,
+      userCount,
+      categoryCount,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const settings = async (req, res) => {
