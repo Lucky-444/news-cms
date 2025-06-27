@@ -18,6 +18,7 @@ const {
   updateUserPage,
   updateUser,
   deleteUser,
+  updateSettings,
 } = require("../controllers/userController");
 const {
   allCategory,
@@ -48,6 +49,7 @@ router.get("/logout", isLoggedIn, logout);
 
 router.get("/dashboard", isLoggedIn, dashboard);
 router.get("/settings", isLoggedIn, isAdmin, settings);
+router.post("/save-settings", isLoggedIn, isAdmin,upload.single("website_logo"),updateSettings);
 
 // User CRUD routes
 router.get("/users", isLoggedIn, isAdmin,allUser);

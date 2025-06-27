@@ -2,6 +2,7 @@ const userModel = require("../models/User");
 const categoryModel = require("../models/Category");
 const newsModel = require("../models/News");
 const commentModel = require("../models/Comment");
+const settingsModel = require("../models/Settings");
 const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
@@ -14,9 +15,6 @@ const loginPage = (req, res) => {
     layout: false,
   });
 };
-
-
-
 
 const adminLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -48,15 +46,10 @@ const adminLogin = async (req, res) => {
   }
 };
 
-
-
-
 const logout = (req, res) => {
   res.clearCookie("token");
   res.redirect("/admin/");
 };
-
-
 
 const dashboard = async (req, res) => {
   try {
@@ -85,15 +78,39 @@ const dashboard = async (req, res) => {
   }
 };
 
-
-
-
 const settings = async (req, res) => {
   res.render("admin/settings", { role: req.role });
 };
+const updateSettings = async (req, res) => {
+  try {
+    const { website_title, website_description } = req.body;
 
+    const website_logo = req.file ? req.file.filename : null;
+    const settings = await settingsModel.findOneAndUpdate(
+      {},
+      {
+        website_description,
+        website_logo,
+        website_title,
+      },
+      {
+        new : true,
+        upsert : true,
+      }
+    );
 
-  
+    await settings.save();
+    res.redirect("/admin/dashboard");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message : "Internal Server Error",
+      error
+    })
+    
+  }
+};
+
 // User CRUD Routes Handler
 const allUser = async (req, res) => {
   const users = await userModel.find();
@@ -174,4 +191,5 @@ module.exports = {
   deleteUser,
   dashboard,
   settings,
+  updateSettings,
 };
