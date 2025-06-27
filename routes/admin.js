@@ -50,7 +50,7 @@ router.get("/dashboard", isLoggedIn, dashboard);
 router.get("/settings", isLoggedIn, isAdmin, settings);
 
 // User CRUD routes
-router.get("/users", isLoggedIn, allUser);
+router.get("/users", isLoggedIn, isAdmin,allUser);
 router.get("/add-user", isLoggedIn, isAdmin, addUserPage);
 router.post("/add-user", isLoggedIn, isAdmin, addUser);
 router.get("/update-user/:id", isLoggedIn, isAdmin, updateUserPage);

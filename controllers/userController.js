@@ -15,6 +15,9 @@ const loginPage = (req, res) => {
   });
 };
 
+
+
+
 const adminLogin = async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -45,14 +48,28 @@ const adminLogin = async (req, res) => {
   }
 };
 
+
+
+
 const logout = (req, res) => {
   res.clearCookie("token");
   res.redirect("/admin/");
 };
 
+
+
 const dashboard = async (req, res) => {
   try {
-    const articleCount = await newsModel.countDocuments();
+    let articleCount;
+    articleCount = await newsModel.countDocuments();
+    if (req.role == "admin") {
+      // if the user is admin
+      // get the count of all articles
+      articleCount = await newsModel.countDocuments();
+    } else
+      articleCount = await newsModel.countDocuments({
+        author: req.id,
+      }); // get the count of articles written by the user
     const userCount = await userModel.countDocuments();
     const categoryCount = await categoryModel.countDocuments();
 
@@ -68,10 +85,15 @@ const dashboard = async (req, res) => {
   }
 };
 
+
+
+
 const settings = async (req, res) => {
   res.render("admin/settings", { role: req.role });
 };
 
+
+  
 // User CRUD Routes Handler
 const allUser = async (req, res) => {
   const users = await userModel.find();
