@@ -84,4 +84,18 @@ router.delete("/delete-article/:id", isLoggedIn, deleteArticle);
 router.get("/comments", isLoggedIn, allComments);
 // router.get('/delete-comment/:id',isLoggedIn,isAdmin,deleteComment); // commented out for now
 
+router.use(isLoggedIn , (req ,res, next) =>{
+    res.status(404).render('admin/404' , {
+       message : 'Page Not Found' ,
+       role : req.role,
+    })
+})
+router.use(isLoggedIn , (err,req ,res, next) =>{
+    console.error(err.stack);
+    res.status(500).render('admin/500' , {
+       message : err.message || "Internal Server Error",
+       role : req.role,
+    })
+})
+
 module.exports = router;

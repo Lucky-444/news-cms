@@ -4,7 +4,7 @@ const userModel = require("../models/User");
 const fs = require("fs");
 const path = require("path");
 
-const allArticle = async (req, res) => {
+const allArticle = async (req, res ,next) => {
   try {
     if (!req.id) {
       return res.status(404).send("Article not found");
@@ -25,7 +25,8 @@ const allArticle = async (req, res) => {
 
     res.render("admin/articles", { role: req.role, articles });
   } catch (error) {
-    console.log(error);
+    
+    next(error);
   }
 };
 
