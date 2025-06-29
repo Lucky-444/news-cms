@@ -4,7 +4,7 @@ const userModel = require("../models/User");
 const fs = require("fs");
 const path = require("path");
 
-const allArticle = async (req, res ,next) => {
+const allArticle = async (req, res, next) => {
   try {
     if (!req.id) {
       return res.status(404).send("Article not found");
@@ -25,7 +25,6 @@ const allArticle = async (req, res ,next) => {
 
     res.render("admin/articles", { role: req.role, articles });
   } catch (error) {
-    
     next(error);
   }
 };
@@ -41,7 +40,7 @@ const addArticlePage = async (req, res) => {
   }
 };
 
-const addArticle = async (req, res) => {
+const addArticle = async (req, res, next) => {
   try {
     const { title, content, category } = req.body;
     const article = new newsModel({
@@ -55,12 +54,11 @@ const addArticle = async (req, res) => {
     console.log(article);
     res.redirect("/admin/article");
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-const updateArticlePage = async (req, res) => {
+const updateArticlePage = async (req, res, next) => {
   try {
     const article = await newsModel
       .findById(req.params.id)
@@ -80,12 +78,11 @@ const updateArticlePage = async (req, res) => {
       categories,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-const updateArticle = async (req, res) => {
+const updateArticle = async (req, res, next) => {
   try {
     const article = await newsModel.findById(req.params.id);
     if (!article) {
@@ -110,9 +107,9 @@ const updateArticle = async (req, res) => {
       );
       fs.unlink(imagePath, (err) => {
         if (err) {
-          console.log(err); 
+          console.log(err);
         }
-      });//Delete the Old Image and 
+      }); //Delete the Old Image and
       //after that add the new image in mongoose
       article.image = req.file.filename;
     }
@@ -121,12 +118,11 @@ const updateArticle = async (req, res) => {
 
     res.redirect("/admin/article");
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-const deleteArticle = async (req, res) => {
+const deleteArticle = async (req, res, next) => {
   try {
     const article = await newsModel.findById(req.params.id);
     if (!article) {
@@ -140,15 +136,15 @@ const deleteArticle = async (req, res) => {
       }
     }
 
-     const imagePath = path.join(
-        __dirname,
-        "../public/uploads/" + article.image
-      );
-      fs.unlink(imagePath, (err) => {
-        if (err) {
-          console.log(err); 
-        }
-      });//Delete the Old Image and 
+    const imagePath = path.join(
+      __dirname,
+      "../public/uploads/" + article.image
+    );
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.log(err);
+      }
+    }); //Delete the Old Image and
     // await article.remove();
     // or
     await article.deleteOne();
@@ -157,8 +153,7 @@ const deleteArticle = async (req, res) => {
       .status(201)
       .json({ message: "Article deleted successfully", success: true });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Internal Server Error", error);
+    next(error);
   }
 };
 

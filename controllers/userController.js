@@ -16,7 +16,7 @@ const loginPage = (req, res) => {
   });
 };
 
-const adminLogin = async (req, res) => {
+const adminLogin = async (req, res, next) => {
   const { username, password } = req.body;
   try {
     const user = await userModel.findOne({ username });
@@ -42,7 +42,7 @@ const adminLogin = async (req, res) => {
     res.redirect("/admin/dashboard");
   } catch (error) {
     console.log(error);
-    res.status(500).send("inTernal server error");
+    next(error);
   }
 };
 
@@ -51,7 +51,7 @@ const logout = (req, res) => {
   res.redirect("/admin/");
 };
 
-const dashboard = async (req, res) => {
+const dashboard = async (req, res, next) => {
   try {
     let articleCount;
     articleCount = await newsModel.countDocuments();
@@ -75,13 +75,14 @@ const dashboard = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    next(error);
   }
 };
 
-const settings = async (req, res) => {
+const settings = async (req, res, next) => {
   res.render("admin/settings", { role: req.role });
 };
-const updateSettings = async (req, res) => {
+const updateSettings = async (req, res, next) => {
   try {
     const { website_title, website_description } = req.body;
 
@@ -103,16 +104,12 @@ const updateSettings = async (req, res) => {
     res.redirect("/admin/dashboard");
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      message : "Internal Server Error",
-      error
-    })
-    
+    next(error);
   }
 };
 
 // User CRUD Routes Handler
-const allUser = async (req, res) => {
+const allUser = async (req, res, next) => {
   const users = await userModel.find();
   res.render("admin/users/index", { users, role: req.role });
 };
@@ -121,12 +118,17 @@ const addUserPage = (req, res) => {
   res.render("admin/users/create", { role: req.role });
 };
 
-const addUser = async (req, res) => {
-  await userModel.create(req.body);
-  res.redirect("/admin/users");
+const addUser = async (req, res, next) => {
+  try {
+    await userModel.create(req.body);
+    res.redirect("/admin/users");
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };
 
-const updateUserPage = async (req, res) => {
+const updateUserPage = async (req, res, next) => {
   try {
     if (!req.params.id) {
       return res.status(400).send("User ID is required");
@@ -138,11 +140,11 @@ const updateUserPage = async (req, res) => {
     res.render("admin/users/update", { user, role: req.role });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   const { id } = req.params;
   const { fullname, password, role } = req.body;
   try {
@@ -161,11 +163,11 @@ const updateUser = async (req, res) => {
     res.redirect("/admin/users");
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   const { id } = req.params;
   try {
     const user = await userModel.findByIdAndDelete(id);
@@ -175,7 +177,7 @@ const deleteUser = async (req, res) => {
     res.json({ message: "User deleted successfully", success: true });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal Server Error");
+    next(error);
   }
 };
 
@@ -193,3 +195,4 @@ module.exports = {
   settings,
   updateSettings,
 };
+
