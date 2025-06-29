@@ -92,8 +92,10 @@ router.use(isLoggedIn , (req ,res, next) =>{
 })
 router.use(isLoggedIn , (err,req ,res, next) =>{
     console.error(err.stack);
-    res.status(500).render('admin/500' , {
-       message : err.message || "Internal Server Error",
+    const status = err.status || 500 ;
+    const view = (status === 404) ? 'admin/404'  : 'admin/500';
+    res.status(status).render(view , {
+       message : err.message || "Something Went Wrong",
        role : req.role,
     })
 })

@@ -1,3 +1,4 @@
+
 const categoryModel = require("../models/Category");
 const newsModel = require("../models/News");
 const userModel = require("../models/User");
@@ -22,6 +23,8 @@ const allArticle = async (req, res, next) => {
         .populate("category", "name")
         .populate("author", "fullname");
     }
+
+
 
     res.render("admin/articles", { role: req.role, articles });
   } catch (error) {
@@ -50,6 +53,7 @@ const addArticle = async (req, res, next) => {
       author: req.id,
       image: req.file.filename,
     });
+
     await article.save();
     console.log(article);
     res.redirect("/admin/article");
@@ -65,7 +69,11 @@ const updateArticlePage = async (req, res, next) => {
       .populate("category", "name")
       .populate("author", "fullname");
     if (!article) {
-      return res.status(404).send("Article not found");
+      // return res.status(404).send("Article not found");
+
+      const error = new Error("Article Not Found")
+      error.status = 404;
+      return next(error);
     }
 
     console.log(article);
@@ -86,7 +94,9 @@ const updateArticle = async (req, res, next) => {
   try {
     const article = await newsModel.findById(req.params.id);
     if (!article) {
-      return res.status(404).send("Article not found");
+      const error = new Error("Article Not Found")
+      error.status = 404;
+      return next(error);
     }
 
     if (req.role === "author") {
