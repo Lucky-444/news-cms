@@ -69,8 +69,6 @@ const updateArticlePage = async (req, res, next) => {
       .populate("category", "name")
       .populate("author", "fullname");
     if (!article) {
-      // return res.status(404).send("Article not found");
-
       const error = new Error("Article Not Found")
       error.status = 404;
       return next(error);
