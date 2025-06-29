@@ -1,4 +1,4 @@
-
+const createError = require('../utils/error-message');
 const categoryModel = require("../models/Category");
 const newsModel = require("../models/News");
 const userModel = require("../models/User");
@@ -69,9 +69,7 @@ const updateArticlePage = async (req, res, next) => {
       .populate("category", "name")
       .populate("author", "fullname");
     if (!article) {
-      const error = new Error("Article Not Found")
-      error.status = 404;
-      return next(error);
+      return next(createError('Ariticle Not Found' , 404));
     }
 
     console.log(article);
